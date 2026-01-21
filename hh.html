@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BanglaWord Typing Master</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --bg-primary: #0a0a14;
+            --bg-secondary: #12121e;
+            --bg-tertiary: #1a1a2e;
+            --neon-green: #00ff9d;
+            --neon-blue: #00b8ff;
+            --neon-purple: #9d4edd;
+            --neon-pink: #ff00ff;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0d0;
+            --text-muted: #8888aa;
+            --correct: #00ff9d;
+            --incorrect: #ff4757;
+            --current: #4cc9f0;
+            --key-bg: #222236;
+            --key-border: #3a3a5a;
+            --shadow-neon: 0 0 10px rgba(0, 255, 157, 0.5);
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 15px 10px;
+            border-bottom: 2px solid var(--neon-green);
+            margin-bottom: 15px;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--neon-green);
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.7);
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--key-border);
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px rgba(0, 184, 255, 0.7);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .typing-container {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--neon-purple);
+            min-height: 180px;
+        }
+
+        .typing-instruction {
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .practice-text {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            text-align: justify;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            min-height: 120px;
+            padding: 10px;
+            background-color: rgba(26, 26, 46, 0.5);
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .current-char {
+            background-color: rgba(76, 201, 240, 0.2);
+            border-bottom: 3px solid var(--current);
+            color: var(--text-primary);
+            padding: 0 3px;
+            border-radius: 3px;
+        }
+
+        .correct {
+            color: var(--correct);
+        }
+
+        .incorrect {
+            color: var(--incorrect);
+            text-decoration: line-through;
+        }
+
+        .input-area {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--neon-green);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.4rem;
+            text-align: center;
+            margin-top: 15px;
+            outline: none;
+            letter-spacing: 1px;
+        }
+
+        .keyboard-container {
+            background-color: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 1px solid var(--key-border);
+        }
+
+        .keyboard-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .key {
+            background-color: var(--key-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--key-border);
+            border-radius: 6px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s;
+            flex: 1;
+            min-width: 30px;
+            max-width: 60px;
+            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .key:hover {
+            background-color: #2a2a40;
+        }
+
+        .key:active, .key.pressed {
+            transform: translateY(3px);
+            box-shadow: none;
+            background-color: var(--neon-purple);
+            border-color: var(--neon-pink);
+        }
+
+        .key-space {
+            flex: 3;
+            max-width: 200px;
+        }
+
+        .key-shift, .key-backspace {
+            flex: 1.5;
+            max-width: 80px;
+            font-size: 1rem;
+        }
+
+        .key-enter {
+            flex: 1.5;
+            max-width: 80px;
+            font-size: 0.9rem;
+        }
+
+        .key-english {
+            font-size: 0.7rem;
+            color: var(--neon-blue);
+            position: absolute;
+            top: 2px;
+            left: 3px;
+        }
+
+        .key-bangla {
+            font-size: 1.3rem;
+        }
+
+        .key-relative {
+            position: relative;
+        }
+
+        .keyboard-info {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--key-border);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-start {
+            background-color: var(--neon-green);
+            color: var(--bg-primary);
+        }
+
+        .btn-reset {
+            background-color: var(--neon-purple);
+            color: white;
+        }
+
+        .btn-new-text {
+            background-color: var(--neon-blue);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding: 15px;
+            border-top: 1px solid var(--key-border);
+        }
+
+        .conjunct-info {
+            background-color: rgba(157, 78, 221, 0.1);
+            border-left: 4px solid var(--neon-purple);
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            color: var(--neon-green);
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .key {
+                height: 42px;
+                font-size: 1.1rem;
+                min-width: 24px;
+                max-width: 50px;
+            }
+            
+            .practice-text {
+                font-size: 1.4rem;
+            }
+            
+            .stat-value {
+                font-size: 1.7rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            
+            .key {
+                height: 52px;
+                max-width: 70px;
+            }
+        }
+
+        /* Landscape mode adjustments */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .header {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .stats-container {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .typing-container {
+                padding: 15px;
+                margin-bottom: 15px;
+                min-height: 120px;
+            }
+            
+            .practice-text {
+                font-size: 1.3rem;
+                min-height: 80px;
+            }
+            
+            .keyboard-container {
+                padding: 10px;
+            }
+            
+            .key {
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-keyboard"></i> BanglaWord Typing Master</h1>
+        <p>Practice Bengali typing with phonetic layout (k=ক, K=খ, etc.)</p>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-box">
+            <div class="stat-value" id="wpm">0</div>
+            <div class="stat-label">WPM</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value" id="accuracy">100%</div>
+            <div class="stat-label">Accuracy</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value" id="time">0s</div>
+            <div class="stat-label">Time</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value" id="errors">0</div>
+            <div class="stat-label">Errors</div>
+        </div>
+    </div>
+
+    <div class="typing-container">
+        <div class="typing-instruction">
+            <i class="fas fa-arrow-down"></i> Type the text below <i class="fas fa-arrow-down"></i>
+        </div>
+        <div class="practice-text" id="practice-text">
+            বাংলা ভাষা বাংলাদেশ ও ভারতের পশ্চিমবঙ্গ রাজ্যের প্রধান ভাষা। এটি একটি ইন্দো-ইউরোপীয় ভাষা।
+        </div>
+        <input type="text" class="input-area" id="input-area" placeholder="Start typing here or use physical keyboard..." readonly>
+        
+        <div class="conjunct-info">
+            <i class="fas fa-lightbulb"></i> Try typing conjuncts: <span class="highlight">k + S = ক্ষ</span>, <span class="highlight">t + t = ত্ত</span>, <span class="highlight">k + k = ক্ক</span>
+        </div>
+    </div>
+
+    <div class="keyboard-container">
+        <div class="keyboard-layout" id="keyboard-layout">
+            <!-- Keyboard rows will be generated by JavaScript -->
+        </div>
+        <div class="keyboard-info">
+            <i class="fas fa-info-circle"></i> Tap keys or use physical keyboard (OTG). Shift toggles between ক/খ type mappings.
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-start" id="btn-start">
+            <i class="fas fa-play"></i> Start Practice
+        </button>
+        <button class="btn btn-reset" id="btn-reset">
+            <i class="fas fa-redo"></i> Reset
+        </button>
+        <button class="btn btn-new-text" id="btn-new-text">
+            <i class="fas fa-sync"></i> New Text
+        </button>
+    </div>
+
+    <div class="footer">
+        <p>BanglaWord Phonetic Layout | Compatible with Mobile & External Keyboards | Practice Bengali Typing</p>
+        <p>Press Shift key to access second layer (e.g., 'k' → ক, 'K' → খ)</p>
+    </div>
+
+    <script>
+        // Bengali practice texts
+        const practiceTexts = [
+            "বাংলা ভাষা বাংলাদেশ ও ভারতের পশ্চিমবঙ্গ রাজ্যের প্রধান ভাষা। এটি একটি ইন্দো-ইউরোপীয় ভাষা।",
+            "আমার সোনার বাংলা, আমি তোমায় ভালোবাসি। চিরদিন তোমার আকাশ, তোমার বাতাস, আমার প্রাণে বাজায় বাঁশি।",
+            "মানুষের জীবনে শিক্ষার গুরুত্ব অপরিসীম। শিক্ষা ছাড়া মানুষ পশুর সমান। জ্ঞানার্জনের জন্য পড়াশোনা প্রয়োজন।",
+            "প্রযুক্তির উন্নতির সাথে সাথে বাংলাদেশ ডিজিটালাইজেশনের দিকে এগিয়ে চলছে। মোবাইল ব্যাংকিং ও ই-কমার্স জনপ্রিয় হচ্ছে।",
+            "রবীন্দ্রনাথ ঠাকুর বাংলা সাহিত্যের অন্যতম শ্রেষ্ঠ কবি। তিনি প্রথম এশীয় হিসেবে নোবেল পুরস্কার পান।",
+            "বাংলাদেশ দক্ষিণ এশিয়ার একটি উন্নয়নশীল দেশ। এর রাজধানীর নাম ঢাকা। বাংলাদেশের জাতীয় ফুল হল শাপলা।",
+            "স্বাস্থ্য সচেতনতা মানুষের জন্য অত্যন্ত গুরুত্বপূর্ণ। স্বাস্থ্যই সকল সুখের মূল। নিয়মিত ব্যায়াম ও পুষ্টিকর খাবার খাওয়া উচিত।",
+            "প্রকৃতি আমাদের জীবনের একটি অবিচ্ছেদ্য অংশ। গাছপালা, পশুপাখি, নদনদী সব মিলিয়ে প্রকৃতির সৌন্দর্য অসীম।",
+            "বিজ্ঞান ও প্রযুক্তির অগ্রগতি মানুষের জীবনযাত্রাকে সহজ করেছে। কম্পিউটার ও ইন্টারনেট এখন দৈনন্দিন জীবনের অংশ।",
+            "ভ্রমণ মানুষের জ্ঞানের পরিধি বাড়ায়। নতুন স্থান দেখা, নতুন মানুষ দেখা ও নতুন সংস্কৃতি জানার মাধ্যমে মানুষ সমৃদ্ধ হয়।"
+        ];
+
+        // BanglaWord phonetic mapping
+        const banglaMap = {
+            // First layer (lowercase)
+            'a': 'অ', 'b': 'ব', 'c': 'চ', 'd': 'দ', 'e': 'এ', 'f': 'ফ', 'g': 'গ', 'h': 'হ',
+            'i': 'ই', 'j': 'জ', 'k': 'ক', 'l': 'ল', 'm': 'ম', 'n': 'ন', 'o': 'ও', 'p': 'প',
+            'q': '্য', 'r': 'র', 's': 'স', 't': 'ত', 'u': 'উ', 'v': 'ভ', 'w': 'ও', 'x': 'এক্স',
+            'y': 'ই', 'z': 'জ',
+            
+            // Second layer (uppercase/shift)
+            'A': 'আ', 'B': 'ভ', 'C': 'ছ', 'D': 'ড', 'E': 'ঐ', 'F': 'ঢ', 'G': 'ঘ', 'H': 'ঃ',
+            'I': 'ঈ', 'J': 'ঝ', 'K': 'খ', 'L': 'ল', 'M': 'ং', 'N': 'ণ', 'O': 'ঔ', 'P': 'ফ',
+            'Q': 'ৃ', 'R': 'ড়', 'S': 'শ', 'T': 'ট', 'U': 'ঊ', 'V': 'ভ', 'W': 'ও', 'X': 'ক্ষ',
+            'Y': 'য়', 'Z': 'ঝ',
+            
+            // Numbers
+            '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯',
+            
+            // Special characters
+            ',': ',', '.': '।', '/': '/', ';': ';', "'": "'", '[': '[', ']': ']', '\\': '\\',
+            '-': '-', '=': '=', '`': 'র',
+            ' ': ' ', // Space
+        };
+
+        // Juktokkhor (conjunct) mappings for common combinations
+        const conjunctMap = {
+            'ক': { 'ষ': 'ক্ষ', 'ক': 'ক্ক', 'ত': 'ক্ত', 'ন': 'ক্ন', 'ল': 'ক্ল', 'র': 'ক্র', 'স': 'ক্স' },
+            'খ': { 'য': 'খ্য' },
+            'গ': { 'ণ': 'গ্ণ', 'ধ': 'গ্ধ', 'ন': 'গ্ন', 'র': 'গ্র', 'ল': 'গ্ল', 'ব': 'গ্ব' },
+            'ঘ': { 'ন': 'ঘ্ন', 'র': 'ঘ্র' },
+            'ঙ': { 'ক': 'ঙ্ক', 'খ': 'ঙ্খ', 'গ': 'ঙ্গ', 'ঘ': 'ঙ্ঘ', 'চ': 'ঞ্চ' },
+            'চ': { 'চ': 'চ্চ', 'ছ': 'চ্ছ', 'য': 'চ্য' },
+            'জ': { 'জ': 'জ্জ', 'ঝ': 'জ্ঝ', 'ঞ': 'জ্ঞ', 'য': 'জ্য' },
+            'ট': { 'ট': 'ট্ট' },
+            'ড': { 'ড': 'ড্ড', 'ঢ': 'ড্ঢ' },
+            'ত': { 'ত': 'ত্ত', 'থ': 'ত্থ', 'ন': 'ত্ন', 'র': 'ত্র', 'ল': 'ত্ল', 'স': 'ৎস', 'ম': 'ত্ম' },
+            'থ': { 'য': 'থ্য' },
+            'দ': { 'দ': 'দ্দ', 'ধ': 'দ্ধ', 'ব': 'দ্ব', 'ভ': 'দ্ভ', 'য': 'দ্য', 'ম': 'দ্ম' },
+            'ধ': { 'য': 'ধ্য' },
+            'ন': { 'ত': 'ন্ত', 'দ': 'ন্দ', 'ধ': 'ন্ধ', 'ন': 'ন্ন', 'র': 'ন্র', 'ল': 'ন্ল', 'স': 'ন্স' },
+            'প': { 'ত': 'প্ত', 'ন': 'প্ন', 'র': 'প্র', 'ল': 'প্ল' },
+            'ফ': { 'ল': 'ফ্ল' },
+            'ব': { 'দ': 'ব্দ', 'ধ': 'ব্ধ', 'য': 'ব্য' },
+            'ম': { 'ন': 'ম্ন', 'প': 'ম্প', 'ফ': 'ম্ফ', 'ব': 'ম্ব', 'ভ': 'ম্ভ', 'ম': 'ম্ম', 'র': 'ম্র', 'ল': 'ম্ল' },
+            'র': { 'র': 'র্দ' },
+            'ল': { 'ক': 'ল্ক', 'গ': 'ল্গ', 'ট': 'ল্ট', 'ড': 'ল্ড', 'প': 'ল্প', 'ফ': 'ল্ফ', 'ব': 'ল্ব' },
+            'শ': { 'র': 'শ্র', 'ল': 'শ্ল', 'য': 'শ্য' },
+            'স': { 'ত': 'স্ত', 'থ': 'স্থ', 'ন': 'স্ন', 'প': 'স্প', 'ফ': 'স্ফ', 'ব': 'স্ব', 'ম': 'স্ম', 'র': 'স্র', 'ল': 'স্ল', 'য': 'স্য' },
+            'হ': { 'ণ': 'হ্ণ', 'ন': 'হ্ন', 'র': 'হ্র', 'ল': 'হ্ল', 'য': 'হ্য' }
+        };
+
+        // Keyboard layout definition
+        const keyboardRows = [
+            ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+            ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
+            ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
+            ['Space']
+        ];
+
+        // App state variables
+        let currentText = '';
+        let currentPosition = 0;
+        let errors = 0;
+        let startTime = null;
+        let timerInterval = null;
+        let isPracticeActive = false;
+        let isShiftActive = false;
+        let lastKey = '';
+        let lastBanglaChar = '';
+        let totalCharsTyped = 0;
+        let correctCharsTyped = 0;
+
+        // DOM elements
+        const practiceTextEl = document.getElementById('practice-text');
+        const inputAreaEl = document.getElementById('input-area');
+        const keyboardLayoutEl = document.getElementById('keyboard-layout');
+        const wpmEl = document.getElementById('wpm');
+        const accuracyEl = document.getElementById('accuracy');
+        const timeEl = document.getElementById('time');
+        const errorsEl = document.getElementById('errors');
+        const btnStart = document.getElementById('btn-start');
+        const btnReset = document.getElementById('btn-reset');
+        const btnNewText = document.getElementById('btn-new-text');
+
+        // Initialize the app
+        function initApp() {
+            // Set initial practice text
+            currentText = practiceTexts[0];
+            practiceTextEl.innerHTML = formatPracticeText(currentText);
+            
+            // Generate virtual keyboard
+            generateVirtualKeyboard();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Focus input area
+            inputAreaEl.focus();
+        }
+
+        // Generate virtual keyboard
+        function generateVirtualKeyboard() {
+            keyboardLayoutEl.innerHTML = '';
+            
+            keyboardRows.forEach(row => {
+                const rowEl = document.createElement('div');
+                rowEl.className = 'keyboard-row';
+                
+                row.forEach(keyChar => {
+                    const keyEl = document.createElement('div');
+                    
+                    // Set key classes based on type
+                    keyEl.className = 'key key-relative';
+                    if (keyChar === 'Space') keyEl.classList.add('key-space');
+                    if (keyChar === 'Shift') keyEl.classList.add('key-shift');
+                    if (keyChar === 'Backspace') keyEl.classList.add('key-backspace');
+                    if (keyChar === 'Enter') keyEl.classList.add('key-enter');
+                    
+                    // Set key content
+                    const englishChar = keyChar === 'Space' ? 'Space' : 
+                                       keyChar === 'Shift' ? 'Shift' : 
+                                       keyChar === 'Backspace' ? '⌫' : 
+                                       keyChar === 'Enter' ? 'Enter' : keyChar;
+                    
+                    const banglaChar = getBanglaChar(keyChar, isShiftActive);
+                    
+                    keyEl.innerHTML = `
+     
